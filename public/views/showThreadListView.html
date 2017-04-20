@@ -1,0 +1,14 @@
+<div class="btn-group" style="margin-bottom: 10px;">
+    <button class="btn btn-danger" ng-click="logout()">Logout</button>
+    <a href="/#/post/create/{{thread.id}}/{{currentUser.id}}" class="btn btn-default">Post erstellen</a>
+</div>
+<h3>{{thread.title}}</h3>
+<ul>
+    <li ng-repeat="post in posts">
+        {{post.title}}: {{post.content}} <br> von: {{post.user}}, gepostet am: {{parseDate(post.created_at) | date:'MMMM d, y  HH:mm:ss'}}
+        (<span class="link" ng-click="click(post.id)">{{post.num_comments}} Kommentare</span>) (<span class="link" ng-click="removePost(post.id)">x</span>)
+        <ul ng-show="showCommentsForPost[{{post.id}}]">
+            <li ng-repeat="comment in post.comments">{{comment.content}}, von {{comment.user}}</li>
+        </ul>
+    </li>
+</ul>

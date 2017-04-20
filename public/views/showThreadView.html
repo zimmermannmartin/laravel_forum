@@ -1,0 +1,47 @@
+<div class="btn-group" style="margin-bottom: 10px;">
+    <button class="btn btn-danger" ng-click="logout()">Logout</button>
+    <a href="/#/post/create/{{thread.id}}/{{currentUser.id}}" class="btn btn-default">Post erstellen</a>
+</div>
+<h3>{{thread.title}}</h3>
+<table class="table">
+    <thead>
+    <tr>
+        <th>Titel</th>
+        <th>Post</th>
+        <th>Autor</th>
+        <th>Erstellungsdatum</th>
+        <th>Anzahl Kommentare</th>
+        <th>Kommentar hinzufügen</th>
+        <th>Post löschen</th>
+    </tr>
+    </thead>
+    <tbody ng-repeat="post in posts | orderBy:'-created_at'" ng-switch on="isSelPost(post)" ng-click="selPost(post,$index)">
+    <tr ng-class="{sel:selIdx==$index}" style="cursor: pointer">
+        <td>{{post.title}}</td>
+        <td>{{post.content}}</td>
+        <td>{{post.user}}</td>
+        <td>{{parseDate(post.created_at) | date:'MMMM d, y  HH:mm:ss'}}</td>
+        <td>{{post.num_comments}}</td>
+        <td><a href="/#/comment/create/{{post.id}}/{{currentUser.id}}/{{thread.id}}"><span class="glyphicon glyphicon-plus"></span></a></td>
+        <td><span class="glyphicon glyphicon-remove" ng-click="removePost(post.id)"></span></td>
+    </tr>
+    <tr ng-switch-when="true">
+        <td colspan="7">
+            <table class="table">
+                <thead>
+                    <tr class="info">
+                        <th>Kommentar</th>
+                        <th>User</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="comment in comments">
+                        <td>{{comment.content}}</td>
+                        <td>{{comment.user}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+    </tbody>
+</table>

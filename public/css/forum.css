@@ -1,0 +1,13 @@
+ul {
+    list-style: none;
+}
+
+li {
+    margin: 20px;
+}
+
+.link {
+    color: #0000FF;
+    text-decoration: underline;
+    cursor: pointer;
+}
