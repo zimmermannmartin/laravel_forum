@@ -27,4 +27,6 @@ Route::group(['prefix' => 'api'], function (){
     Route::post('post/create/{tid}/{uid}', 'PostController@store');
     Route::delete('post/{pid}', 'PostController@destroy');
     Route::post('comment/create/{pid}/{uid}', 'CommentController@store');
+    Route::get('user', 'UserController@index');
+    Route::put('thread/user', 'ThreadController@addUserToThread');
 });

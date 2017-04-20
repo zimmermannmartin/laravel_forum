@@ -10,9 +10,9 @@ use Illuminate\Http\Request;
 
 class ThreadController extends Controller
 {
-    public function __construct(){
+    /*public function __construct(){
         $this->middleware('jwt.auth');
-    }
+    }*/
 
     /**
      * Display a listing of the resource.
@@ -47,6 +47,13 @@ class ThreadController extends Controller
 
     public function getThreadbyId($threadId){
         return Thread::find($threadId);
+    }
+
+    public function addUserToThread(Request $request){
+        $userId = $request->userId;
+        $threadId = $request->threadId;
+
+        return User::find($userId)->threads()->save(Thread::find($threadId));
     }
 
     /**

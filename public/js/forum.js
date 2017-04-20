@@ -151,6 +151,14 @@ app.controller('ThreadShowController', function ($scope, $http, $state, Authenti
         }, function (error) {
             $scope.error = error.error;
         });
+    $http.get('api/user')
+        .then(function (response) {
+            console.log('users', response.data);
+            $scope.users = response.data;
+        }, function (error) {
+            console.log(error);
+            $scope.error = error.error;
+        });
 
     $scope.selIdx=-1;
 
@@ -180,6 +188,16 @@ app.controller('ThreadShowController', function ($scope, $http, $state, Authenti
                 getPosts();
             });
 
+    };
+
+    $scope.addUser = function () {
+        $http.put('api/thread/user', {
+            userId: $scope.userToAdd,
+            threadId: $scope.thread.id
+        })
+            .then(function (response) {
+                console.log(response);
+            })
     };
 
     function getPosts() {
