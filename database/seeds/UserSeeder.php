@@ -17,7 +17,6 @@ class UserSeeder extends Seeder
         DB::table('users')->delete();
 
         $users = array(
-            ['name' => 'Martin Zimmermann', 'email' => 'martin.zimmermann19@gmail.com', 'password' => Hash::make('secret')],
             ['name' => 'John Doe', 'email' => 'john@doe.com', 'password' => Hash::make('secret')],
             ['name' => 'Max Mustermann', 'email' => 'max.mustermann@gmail.com', 'password' => Hash::make('secret')],
             ['name' => 'Sabine Wappler', 'email' => 'sabine@wappler.at', 'password' => Hash::make('secret')],
