@@ -1,0 +1,14 @@
+<div file-chooser ng-model="avatar" accept="image/*">
+    <button class="btn btn-default" title="Neues Bild hochladen" file-select>
+        <span class="glyphicon glyphicon-export"></span>
+    </button>
+
+    <button class="btn btn-danger" title="Kein Bild verwenden" ng-click="bildloeschen(satz)" ng-show="satz.inhalt._embedded.verfasser.bild">
+        <span class="glyphicon glyphicon-trash"></span>
+    </button>
+</div>
+
+<button class="btn btn-primary" ng-click="save()">Speichern</button>
+
+
+<img ng-src="{{avatar}}">

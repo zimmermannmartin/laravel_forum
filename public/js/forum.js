@@ -64,14 +64,25 @@ app.config(function ($stateProvider, $urlRouterProvider, $authProvider, $httpPro
             url: '/comment/create/:pid/:uid/:tid',
             templateUrl: '../views/createCommentView.html',
             controller: 'CommentCreateController'
+        })
+        .state('settings', {
+            url: '/settings',
+            templateUrl: '../views/settingsView.html',
+            controller: 'SettingsController'
         });
 });
 
 app.run(function ($transitions, $rootScope) {
+    var user = JSON.parse(localStorage.getItem('user'));
+    if (user){
+        $rootScope.authenticated = true;
+        $rootScope.currentUser = user;
+    }
     $transitions.onStart({to: 'auth.**'}, function (trans) {
         console.log('stateChangeStart');
         var user = JSON.parse(localStorage.getItem('user'));
         if (user){
+            console.log('User is there', user);
             $rootScope.authenticated = true;
             $rootScope.currentUser = user;
             event.preventDefault();
@@ -209,10 +220,6 @@ app.controller('ThreadShowController', function ($scope, $http, $state, Authenti
                 $scope.error = error.error;
             });
     }
-
-    $scope.logout = function () {
-        Authenticate.logout();
-    };
 });
 
 /*app.controller('ThreadShowListController', function ($scope, $http, $state, Authenticate) {
@@ -280,4 +287,37 @@ app.controller('CommentCreateController', function ($scope, $http, $state) {
         });
         $state.go('showPosts', {'id': $state.params.tid});
     }
+});
+
+app.controller('AuthenticationController', function ($scope, $http, Authenticate, $rootScope) {
+    $scope.logout = function () {
+        Authenticate.logout();
+    };
+
+    $http.get('api/files/'+$rootScope.currentUser.id)
+        .then(function (response) {
+            console.log(response);
+            $scope.avatar = response.data;
+            console.log($scope.avatar);
+        }, function (error) {
+            $scope.avatar = false;
+        });
+});
+
+app.controller('SettingsController', function ($scope, $http, $rootScope) {
+    $scope.save = function () {
+        console.log('picture', $scope.avatar);
+        $http.post('api/files', {
+            avatar: $scope.avatar,
+            user_id: $rootScope.currentUser.id
+        }).then(function (response) {
+            console.log('resp', response);
+        });
+    };
+
+    $http.get('api/files/'+$rootScope.currentUser.id)
+        .then(function (response) {
+            console.log(response);
+            $scope.avatar = response.data;
+        });
 });
