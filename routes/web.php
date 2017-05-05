@@ -29,4 +29,5 @@ Route::group(['prefix' => 'api'], function (){
     Route::post('comment/create/{pid}/{uid}', 'CommentController@store');
     Route::get('user', 'UserController@index');
     Route::put('thread/user', 'ThreadController@addUserToThread');
+    Route::resource('files', 'FileController');
 });

@@ -17,10 +17,17 @@
 
     <script src="js/forum.js"></script>
     <script src="js/authenticate.js"></script>
+    <script src="/js/filechooser.js"></script>
 </head>
 <body>
     <h1>Forum</h1>
-
+    <div ng-controller="AuthenticationController" ng-show="authenticated">
+        <h5><img ng-show="avatar" ng-src="{{avatar}}" style="width: 50px; height: auto"> Hallo, {{currentUser.name}}</h5>
+        <div class="btn-group" style="margin-bottom: 10px;">
+            <a href="/#/settings" class="btn bnt-primary">Settings</a>
+            <button class="btn btn-danger" ng-click="logout()">Logout</button>
+        </div>
+    </div>
     <div ui-view></div>
 </body>
 </html>
