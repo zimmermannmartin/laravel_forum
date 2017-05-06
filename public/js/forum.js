@@ -125,20 +125,31 @@ app.controller('AuthController', function ($scope, $http, $rootScope, $state, $a
 app.controller('UserController', function ($http, $scope, $auth, $rootScope, Authenticate) {
     var userID = JSON.parse(localStorage.getItem('user')).id;
 
-    console.log("ID: " + userID);
     $http.get('api/authenticate/'+userID).success(function (threads) {
-        $scope.threads = threads;
+        $scope.data = threads;
+        $scope.threads = threads.data;
     }).error(function (error) {
         $scope.error = error;
     });
 
-    $scope.logout = function (){
-        /*$auth.logout().then(function () {
-            localStorage.removeItem('user');
-            $rootScope.authenticated = false;
-            $rootScope.currentUser = null;
-        });*/
-        Authenticate.logout();
+    $scope.next = function () {
+        if ($scope.data.next_page_url){
+            $http.get($scope.data.next_page_url)
+                .then(function (response) {
+                    $scope.data = response.data;
+                    $scope.threads = response.data.data;
+                });
+        }
+    };
+
+    $scope.prev = function () {
+        if ($scope.data.prev_page_url){
+            $http.get($scope.data.prev_page_url)
+                .then(function (response) {
+                    $scope.data = response.data;
+                    $scope.threads = response.data.data;
+                });
+        }
     };
 });
 
@@ -294,14 +305,18 @@ app.controller('AuthenticationController', function ($scope, $http, Authenticate
         Authenticate.logout();
     };
 
-    $http.get('api/files/'+$rootScope.currentUser.id)
-        .then(function (response) {
-            console.log(response);
-            $scope.avatar = response.data;
-            console.log($scope.avatar);
-        }, function (error) {
-            $scope.avatar = false;
-        });
+    try {
+        $http.get('api/files/' + $rootScope.currentUser.id)
+            .then(function (response) {
+                console.log(response);
+                $scope.avatar = response.data;
+                console.log($scope.avatar);
+            }, function (error) {
+                $scope.avatar = false;
+            });
+    } catch (e){
+        console.log('no User', e);
+    }
 });
 
 app.controller('SettingsController', function ($scope, $http, $rootScope) {
