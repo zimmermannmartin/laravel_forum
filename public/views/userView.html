@@ -14,6 +14,10 @@
     </tr>
     </tbody>
 </table>
+<div class="btn-group">
+    <button ng-disabled="!data.prev_page_url" class="btn btn-primary" ng-click="prev()">Previous Page</button>
+    <button ng-disabled="!data.next_page_url" class="btn btn-primary" ng-click="next()">Next Page</button>
+</div>
 <div class="alert alert-danger" ng-show="error">
     <strong>There was an error: </strong> {{error.error}} <br>
     Please go back and login again

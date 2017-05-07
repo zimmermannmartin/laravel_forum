@@ -125,20 +125,31 @@ app.controller('AuthController', function ($scope, $http, $rootScope, $state, $a
 app.controller('UserController', function ($http, $scope, $auth, $rootScope, Authenticate) {
     var userID = JSON.parse(localStorage.getItem('user')).id;
 
-    console.log("ID: " + userID);
     $http.get('api/authenticate/'+userID).success(function (threads) {
-        $scope.threads = threads;
+        $scope.data = threads;
+        $scope.threads = threads.data;
     }).error(function (error) {
         $scope.error = error;
     });
 
-    $scope.logout = function (){
-        /*$auth.logout().then(function () {
-            localStorage.removeItem('user');
-            $rootScope.authenticated = false;
-            $rootScope.currentUser = null;
-        });*/
-        Authenticate.logout();
+    $scope.next = function () {
+        if ($scope.data.next_page_url){
+            $http.get($scope.data.next_page_url)
+                .then(function (response) {
+                    $scope.data = response.data;
+                    $scope.threads = response.data.data;
+                });
+        }
+    };
+
+    $scope.prev = function () {
+        if ($scope.data.prev_page_url){
+            $http.get($scope.data.prev_page_url)
+                .then(function (response) {
+                    $scope.data = response.data;
+                    $scope.threads = response.data.data;
+                });
+        }
     };
 });
 
@@ -153,7 +164,7 @@ app.controller('ThreadCreateController', function ($scope, $http, $state) {
     }
 });
 
-app.controller('ThreadShowController', function ($scope, $http, $state, Authenticate) {
+app.controller('ThreadShowController', function ($scope, $http, $state, $rootScope) {
     console.log($state.params.id);
     getPosts();
     $http.get('api/thread/get/'+$state.params.id)
@@ -170,6 +181,19 @@ app.controller('ThreadShowController', function ($scope, $http, $state, Authenti
             console.log(error);
             $scope.error = error.error;
         });
+    function getUsersForThread() {
+        $http.get('api/thread/'+$state.params.id+'/users')
+            .then(function (response) {
+                $scope.threadUsers = response.data[0].name;
+                response.data = response.data.slice(1,response.data.length);
+                response.data.forEach(function (user) {
+                    $scope.threadUsers += ", " + user.name;
+                });
+                //$scope.threadUsers = response.data;
+            }, function (error) {
+                $scope.error = error.error;
+            });
+    }getUsersForThread();
 
     $scope.selIdx=-1;
 
@@ -202,13 +226,16 @@ app.controller('ThreadShowController', function ($scope, $http, $state, Authenti
     };
 
     $scope.addUser = function () {
-        $http.put('api/thread/user', {
-            userId: $scope.userToAdd,
-            threadId: $scope.thread.id
-        })
-            .then(function (response) {
-                console.log(response);
+        if ($scope.userToAdd != $rootScope.currentUser.id) {
+            $http.put('api/thread/user', {
+                userId: $scope.userToAdd,
+                threadId: $scope.thread.id
             })
+                .then(function (response) {
+                    getUsersForThread();
+                    console.log(response);
+                });
+        }
     };
 
     function getPosts() {
@@ -219,7 +246,7 @@ app.controller('ThreadShowController', function ($scope, $http, $state, Authenti
             }, function (error) {
                 $scope.error = error.error;
             });
-    }
+    };
 });
 
 /*app.controller('ThreadShowListController', function ($scope, $http, $state, Authenticate) {
@@ -294,14 +321,18 @@ app.controller('AuthenticationController', function ($scope, $http, Authenticate
         Authenticate.logout();
     };
 
-    $http.get('api/files/'+$rootScope.currentUser.id)
-        .then(function (response) {
-            console.log(response);
-            $scope.avatar = response.data;
-            console.log($scope.avatar);
-        }, function (error) {
-            $scope.avatar = false;
-        });
+    try {
+        $http.get('api/files/' + $rootScope.currentUser.id)
+            .then(function (response) {
+                console.log(response);
+                $scope.avatar = response.data;
+                console.log($scope.avatar);
+            }, function (error) {
+                $scope.avatar = false;
+            });
+    } catch (e){
+        console.log('no User', e);
+    }
 });
 
 app.controller('SettingsController', function ($scope, $http, $rootScope) {

@@ -20,8 +20,7 @@ class AuthenticateController extends Controller
     }
 
     public function index($userID){
-        $threads = User::find($userID)->threads()->get();
-        return $threads;
+        return User::orderBy('created_at', 'desc')->find($userID)->threads()->paginate(5);
     }
 
     public function authenticate(Request $request){
